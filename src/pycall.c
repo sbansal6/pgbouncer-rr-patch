@@ -1,11 +1,8 @@
 /*
 Copyright 2015-2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-
 Licensed under the Amazon Software License (the "License"). 
 You may not use this file except in compliance with the License. A copy of the License is located at
-
     http://aws.amazon.com/asl/
-
 or in the "license" file accompanying this file. 
 This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions and limitations under the License.
 */
@@ -64,7 +61,7 @@ char *pycall(PgSocket *client, char *username, char *query_str, char *py_file,
 	Py_Initialize();
 
 	/* Load python module */
-	pName = PyString_FromString(py_module);
+	pName = PyUnicode_FromString(py_module);
 	if (pName == NULL) {
 		slog_error(client, "Python module <%s> did not load", py_module);
 		goto finish;
@@ -95,13 +92,13 @@ char *pycall(PgSocket *client, char *username, char *query_str, char *py_file,
 		slog_error(client, "Python module <%s>: out of memory", py_module);
 		goto finish;
 	}
-	pValue = PyString_FromString(username);
+	pValue = PyUnicode_FromString(username);
 	if (pValue == NULL) {
 		slog_error(client, "Python module <%s>: out of memory", py_module);
 		goto finish;
 	}
 	PyTuple_SetItem(pArgs, 0, pValue);
-	pValue = PyString_FromString(query_str);
+	pValue = PyUnicode_FromString(query_str);
 	if (pValue == NULL) {
 		slog_error(client, "Python module <%s>: out of memory", py_module);
 		goto finish;
@@ -113,8 +110,16 @@ char *pycall(PgSocket *client, char *username, char *query_str, char *py_file,
 				py_function);
 		goto finish;
 	}
-	if (PyString_Check(pValue)) {
-		res = strdup(PyString_AsString(pValue));
+	if (PyUnicode_Check(pValue)) {
+		//res = strdup(PyUnicode_AsEncodedString(pValue, "UTF-8", "strict"));
+		PyObject * temp_bytes = PyUnicode_AsEncodedString(pValue, "UTF-8", "strict"); // Owned reference
+		if (temp_bytes != NULL) {
+			res = PyBytes_AS_STRING(temp_bytes); // Borrowed pointer
+			res = strdup(res);
+			Py_DECREF(temp_bytes);
+		} else {
+			// TODO: Handle encoding error.
+		}
 	} else {
 		res = NULL;
 	}
@@ -122,7 +127,7 @@ char *pycall(PgSocket *client, char *username, char *query_str, char *py_file,
 	finish:
 	if (PyErr_Occurred()) {
 		PyErr_Fetch(&ptype, &perror, &ptraceback);
-		slog_error(client, "Python error: %s", PyString_AsString(perror));
+		slog_error(client, "Python error: %s", PyUnicode_AsEncodedString(perror, "UTF-8", "strict"));
 	}
 	free(py_pathtmp);
 	free(py_filetmp);
@@ -134,4 +139,3 @@ char *pycall(PgSocket *client, char *username, char *query_str, char *py_file,
 	Py_XDECREF(pValue);
 	return res;
 }
-

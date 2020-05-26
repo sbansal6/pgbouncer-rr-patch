@@ -181,19 +181,18 @@ But now, when you look in the Redshift console 'Queries' tab, you will see that 
 SELECT prodname, SUM(total) FROM product_sales GROUP BY prodname ORDER BY prodname;
 ```
 
-# Getting Started
-
+# Getting Started:- Make sure python 3.6 is installed
 **Install**  
 Download and install pgbouncer-rr by running the following commands (Amazon Linux/RHEL/CentOS):
 ```
 # install required packages - see https://github.com/pgbouncer/pgbouncer#building
-sudo yum install libevent-devel openssl-devel python-devel libtool git patch make -y
+sudo yum install libevent-devel openssl-devel python-devel python3-devel.x86_64 libtool git patch make -y
 
 # download the latest tested pgbouncer distribution - 1.12
 git clone https://github.com/pgbouncer/pgbouncer.git --branch "pgbouncer_1_12_0"
 
 # download pgbouncer-rr extensions
-git clone https://github.com/awslabs/pgbouncer-rr-patch.git
+git clone https://github.com/sbansal6/pgbouncer-rr-patch.git
 
 # merge pgbouncer-rr extensions into pgbouncer code
 cd pgbouncer-rr-patch

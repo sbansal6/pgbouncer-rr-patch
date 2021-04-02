@@ -127,7 +127,7 @@ char *pycall(PgSocket *client, char *username, char *query_str, char *py_file,
 	finish:
 	if (PyErr_Occurred()) {
 		PyErr_Fetch(&ptype, &perror, &ptraceback);
-		slog_error(client, "Python error: %s", PyUnicode_AsEncodedString(perror, "UTF-8", "strict"));
+		slog_error(client, "Python error:<%s>", PyUnicode_AsEncodedString(perror, "UTF-8", "strict"));
 	}
 	free(py_pathtmp);
 	free(py_filetmp);

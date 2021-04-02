@@ -38,7 +38,7 @@
  	include/common/unicode_norm_table.h
  
 -pgbouncer_CPPFLAGS = -Iinclude $(CARES_CFLAGS) $(LIBEVENT_CFLAGS) $(TLS_CPPFLAGS)
-+python_CPPFLAGS = -I/usr/include/python3.6m -I/usr/include/python3.6m
++python_CPPFLAGS = -I/usr/local/include/python3.6m -I/usr/local/include/python3.6m
 +pgbouncer_CPPFLAGS = -Iinclude $(CARES_CFLAGS) $(LIBEVENT_CFLAGS) $(TLS_CPPFLAGS) $(python_CPPFLAGS)
  
  # include libusual sources directly
@@ -68,7 +68,7 @@
  		lib/README lib/COPYRIGHT \
  		lib/find_modules.sh )))
  
-+python_LDFLAGS = -lpthread -ldl -lutil -lm -lpython3.6 -Xlinker -export-dynamic
++python_LDFLAGS = -L/usr/local/lib/python3.6/config-3.6m-x86_64-linux-gnu -L/usr/local/lib -lpython3.6m -lpthread -ldl  -lutil -lm  -Xlinker -export-dynamic
  pgbouncer_LDFLAGS := $(TLS_LDFLAGS)
 -pgbouncer_LDADD := $(CARES_LIBS) $(LIBEVENT_LIBS) $(TLS_LIBS) $(LIBS)
 +pgbouncer_LDADD := $(CARES_LIBS) $(LIBEVENT_LIBS) $(TLS_LIBS) $(LIBS) $(python_LDFLAGS)
